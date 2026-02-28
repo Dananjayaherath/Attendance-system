@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Attendance System</title>
+<style>
+body { font-family: Arial; text-align: center; margin-top: 40px; }
+button { padding: 10px 20px; margin: 10px; font-size: 16px; }
+table { margin: auto; margin-top: 20px; border-collapse: collapse; }
+th, td { border: 1px solid #333; padding: 8px 15px; }
+th { background: #f0f0f0; }
+</style>
+</head>
+<body>
+
+<h2>Daily Attendance</h2>
+<p id="date"></p>
+
+<button onclick="checkIn()">IN</button>
+<button onclick="checkOut()">OUT</button>
+<button onclick="clearData()">Clear</button>
+
+<table>
+<thead>
+<tr>
+<th>Date</th>
+<th>Check In</th>
+<th>Check Out</th>
+</tr>
+</thead>
+<tbody id="attendanceTable"></tbody>
+</table>
+
+<script>
+document.getElementById("date").innerHTML = new Date().toDateString();
+
+let attendance = JSON.parse(localStorage.getItem("attendance")) || [];
+
+function saveData() {
+localStorage.setItem("attendance", JSON.stringify(attendance));
+displayData();
+}
+
+function checkIn() {
+let today = new Date().toDateString();
+let time = new Date().toLocaleTimeString();
+
+let record = attendance.find(r => r.date === today);
+
+if (!record) {
+attendance.push({date: today, in: time, out: ""});
+} else {
+record.in = time;
+}
+saveData();
+}
+
+function checkOut() {
+let today = new Date().toDateString();
+let time = new Date().toLocaleTimeString();
+
+let record = attendance.find(r => r.date === today);
+
+if (record) {
+record.out = time;
+}
+saveData();
+}
+
+function clearData() {
+localStorage.removeItem("attendance");
+attendance = [];
+displayData();
+}
+
+function displayData() {
+let table = document.getElementById("attendanceTable");
+table.innerHTML = "";
+attendance.forEach(r => {
+table.innerHTML += `<tr>
+<td>${r.date}</td>
+<td>${r.in}</td>
+<td>${r.out}</td>
+</tr>`;
+});
+}
+
+displayData();
+</script>
+
+</body>
+</html>
